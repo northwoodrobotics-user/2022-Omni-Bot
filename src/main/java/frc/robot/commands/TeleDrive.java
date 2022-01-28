@@ -15,13 +15,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class TeleDrive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 private Drivetrain teleDrivetrain;
+private double m_rotation;
+private double m_speed;
+
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TeleDrive(Drivetrain drivetrain) {
+  public TeleDrive(Drivetrain drivetrain, double speed, double rotation) {
     teleDrivetrain = drivetrain;
+    m_speed = speed;
+    m_rotation = rotation;
     
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(teleDrivetrain);
@@ -35,7 +40,7 @@ private Drivetrain teleDrivetrain;
   @Override
   public void execute() {
 
-    teleDrivetrain.arcadeDrive(RobotContainer.xbox.getLeftY(), RobotContainer.xbox.getRightX());
+    teleDrivetrain.ArcadeDrive(m_speed, m_rotation);
   }
 
   // Called once the command ends or is interrupted.

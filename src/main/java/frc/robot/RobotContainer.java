@@ -19,13 +19,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final Drivetrain teleDrivetrain = new Drivetrain();
-  private final TeleDrive m_autoCommand = new TeleDrive(teleDrivetrain);
+  private final TeleDrive teleDrive;
   public static XboxController xbox = new XboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     XboxController xbox = new XboxController(0);
+
+    teleDrive = new TeleDrive(teleDrivetrain, xbox.getLeftY(), xbox.getLeftX());
 
     configureButtonBindings();
     
@@ -44,8 +46,5 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
-  }
+
 }
