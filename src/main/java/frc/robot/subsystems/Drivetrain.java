@@ -37,17 +37,30 @@ public class Drivetrain extends SubsystemBase {
 
 
     arcade = new DifferentialDrive(leftfront, rightfront);
+    arcade.setSafetyEnabled(false);
+    arcade.setExpiration(0.1);
   }
 
   public void ArcadeDrive(double speed, double rotation){
     arcade.arcadeDrive(speed, rotation);
   }
+
+
+  public  double ShowLeftDriveSpeeds(){
+    return leftDriveEncoder.getVelocity();
+
+  }
+  
+  public  double ShowRightDriveSpeeds(){
+    return rightDriveEncoder.getVelocity();
+
+  }
  
 
   @Override
   public void periodic() {
-    drivetrain.addNumber("LeftRPM", ()-> leftDriveEncoder.getVelocity());
-    drivetrain.addNumber("LeftRPM", ()-> rightDriveEncoder.getVelocity());
+    //drivetrain.addNumber("LeftDriveSpeed", ()-> leftDriveEncoder.getVelocity());
+    //drivetrain.addNumber("RightDriveSpeed", ()-> rightDriveEncoder.getVelocity());
     // This method will be called once per scheduler run
   }
 

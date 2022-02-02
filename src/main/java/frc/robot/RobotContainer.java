@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.commands.TeleDrive;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,15 +21,17 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public final Drivetrain teleDrivetrain = new Drivetrain();
-  private final TeleDrive teleDrive;
+  //private final TeleDrive teleDrive;
+  public ShuffleboardTab master = Shuffleboard.getTab("Master");
   public static XboxController xbox = new XboxController(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     XboxController xbox = new XboxController(0);
+    teleDrivetrain.setDefaultCommand(new TeleDrive(teleDrivetrain, xbox.getLeftY(), xbox.getLeftX()));
 
-    teleDrive = new TeleDrive(teleDrivetrain, xbox.getLeftY(), xbox.getLeftX());
+  
 
     configureButtonBindings();
     
@@ -46,5 +50,10 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
+  public void ShowMaster(){
+    master.addNumber("LeftDriveSpeed", ()-> teleDrivetrain.ShowLeftDriveSpeeds());
+    
+    master.addNumber("Right", ()-> teleDrivetrain.ShowRightDriveSpeeds());
+  }
 
 }
