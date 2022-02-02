@@ -53,7 +53,7 @@ public class RobotContainer {
   public void ShowMaster(){
     master.addNumber("LeftDriveSpeed", ()-> teleDrivetrain.ShowLeftDriveSpeeds());
     
-    master.addNumber("Right", ()-> teleDrivetrain.ShowRightDriveSpeeds());
+    master.addNumber("RightDriveSpeed", ()-> teleDrivetrain.ShowRightDriveSpeeds());
   }
 
 }
