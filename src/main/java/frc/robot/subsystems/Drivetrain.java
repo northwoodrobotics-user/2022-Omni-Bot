@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.MotorSafety;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -15,9 +16,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Drivetrain extends SubsystemBase {
 
-  public CANSparkMax leftfront = new CANSparkMax(1, MotorType.kBrushless);
-  public CANSparkMax rightfront = new CANSparkMax(0, MotorType.kBrushless);
-  public CANSparkMax SlaveRight = new CANSparkMax(2, MotorType.kBrushless);
+  public CANSparkMax leftfront = new CANSparkMax(4, MotorType.kBrushless);
+  public CANSparkMax rightfront = new CANSparkMax(2, MotorType.kBrushless);
+  public CANSparkMax SlaveRight = new CANSparkMax(1, MotorType.kBrushless);
   public CANSparkMax SlaveLeft = new CANSparkMax(3, MotorType.kBrushless);
   public RelativeEncoder leftDriveEncoder;
   public RelativeEncoder rightDriveEncoder;
@@ -59,8 +60,6 @@ public class Drivetrain extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //drivetrain.addNumber("LeftDriveSpeed", ()-> leftDriveEncoder.getVelocity());
-    //drivetrain.addNumber("RightDriveSpeed", ()-> rightDriveEncoder.getVelocity());
     // This method will be called once per scheduler run
   }
 
