@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import ExternalLib.SpectrumLib.controllers.SpectrumXboxController;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.PIDDRIVE;
+import frc.robot.commands.PIDRUN;
 import frc.robot.commands.TeleDrive;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,16 +24,22 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  public final Drivetrain teleDrivetrain = new Drivetrain();
+  public static Drivetrain teleDrivetrain = new Drivetrain();
   //private final TeleDrive teleDrive;
   public ShuffleboardTab master = Shuffleboard.getTab("Master");
-  public static XboxController xbox = new XboxController(0);
-
+  public static SpectrumXboxController xbox;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
-    XboxController xbox = new XboxController(0);
-    teleDrivetrain.setDefaultCommand(new TeleDrive(teleDrivetrain, xbox.getLeftY(), xbox.getLeftX()));
+     xbox = new SpectrumXboxController(0, 0.1, 0.1);
+
+    teleDrivetrain.setDefaultCommand(new PIDDRIVE(teleDrivetrain, ()->xbox.leftStick.getY()*DriveConstants.MaxDriveRPM, ()->-xbox.rightStick.getX()*1000));
+    //teleDrivetrain.RunAtPID(xbox2.getLeftY()*5000);
+
+
+    ShowMaster();
+    ShowInputs();
+    ShowOdometry();
 
   
 
@@ -43,7 +53,16 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    xbox.aButton.whenHeld(
+      new PIDRUN(()-> xbox.leftStick.getY(), teleDrivetrain)
+    );
+    xbox.yButton.toggleWhenPressed(
+      new TeleDrive(teleDrivetrain, ()-> xbox.leftStick.getY(), ()-> xbox.rightStick.getX())
+    );
+    
+    
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -54,6 +73,19 @@ public class RobotContainer {
     master.addNumber("LeftDriveSpeed", ()-> teleDrivetrain.ShowLeftDriveSpeeds());
     
     master.addNumber("RightDriveSpeed", ()-> teleDrivetrain.ShowRightDriveSpeeds());
+  }
+  public void ShowInputs(){
+    master.addNumber("ControllerY", ()-> xbox.leftStick.getY());
+    
+    master.addNumber("ControllerX", ()-> xbox.rightStick.getX());
+    master.addNumber("PidCommand", ()-> xbox.leftStick.getY()*DriveConstants.MaxDriveRPM);
+  }
+  public void ShowOdometry(){
+    /*master.addNumber("GyroAngle", ()-> teleDrivetrain.getGyro().getDegrees());
+    master.addNumber("OdometryY", ()-> teleDrivetrain.m_odometry.getPoseMeters().getY());
+    master.addNumber("OdometryX", ()-> teleDrivetrain.m_odometry.getPoseMeters().getX());
+*/
+
   }
 
 }

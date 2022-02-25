@@ -4,15 +4,28 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.MotorSafety;
+import edu.wpi.first.wpilibj.SPI;
+
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -20,10 +33,21 @@ public class Drivetrain extends SubsystemBase {
   public CANSparkMax rightfront = new CANSparkMax(2, MotorType.kBrushless);
   public CANSparkMax SlaveRight = new CANSparkMax(1, MotorType.kBrushless);
   public CANSparkMax SlaveLeft = new CANSparkMax(3, MotorType.kBrushless);
+  public SparkMaxPIDController leftController;
+  public SparkMaxPIDController rightController;
+
   public RelativeEncoder leftDriveEncoder;
   public RelativeEncoder rightDriveEncoder;
 
   public ShuffleboardTab drivetrain = Shuffleboard.getTab("Drivetrain");
+
+  public final DifferentialDriveKinematics m_Kinematics = new DifferentialDriveKinematics(
+    DriveConstants.TrackWidth
+  );
+  //public final AHRS gyro = new AHRS(SPI.Port.kMXP);
+
+  //public final DifferentialDriveOdometry m_odometry;
+
 
 
 
@@ -36,14 +60,90 @@ public class Drivetrain extends SubsystemBase {
     leftDriveEncoder = leftfront.getEncoder();
     rightDriveEncoder = rightfront.getEncoder();
 
+    leftfront.setInverted(true);
+    leftController = leftfront.getPIDController();
+    rightController = rightfront.getPIDController();
+    
+
+    leftController.setP(Constants.DriveConstants.DriveKp);
+    
+    leftController.setI(Constants.DriveConstants.Driveki);
+    
+    leftController.setD(Constants.DriveConstants.DriveKd);
+    leftController.setFF(DriveConstants.DriveFF);
+
+    leftController.setIZone(DriveConstants.DriveIZone);
+    leftController.setOutputRange(-1, 1);
+
+
+    rightController.setP(Constants.DriveConstants.DriveKp);
+    
+    rightController.setI(Constants.DriveConstants.Driveki);
+    
+    rightController.setD(Constants.DriveConstants.DriveKd);
+
+    rightController.setFF(DriveConstants.DriveFF);
+
+    rightController.setIZone(DriveConstants.DriveIZone);
+    rightController.setOutputRange(-1, 1);
+    //m_odometry = new DifferentialDriveOdometry(getGyro());
+
+
+    leftDriveEncoder.setPositionConversionFactor(2*Math.PI*DriveConstants.WheelRadius/42);
+    rightDriveEncoder.setPositionConversionFactor(2*Math.PI*DriveConstants.WheelRadius/42);
+
+    //m_odometry.resetPosition(new Pose2d(), getGyro());
+
+
+
+
+
+
+
+
+
+    
+
 
     arcade = new DifferentialDrive(leftfront, rightfront);
     arcade.setSafetyEnabled(false);
     arcade.setExpiration(0.1);
   }
 
+
+  public void setSpeeds(DifferentialDriveWheelSpeeds speeds){
+    double LeftOutput = speeds.leftMetersPerSecond;
+
+    double RightOutput = speeds.rightMetersPerSecond;
+    rightController.setReference(RightOutput, ControlType.kVelocity);
+
+    leftController.setReference(LeftOutput, ControlType.kVelocity);
+
+  }
+
+  /*public Rotation2d getGyro(){
+    if(gyro.isMagnetometerCalibrated()){
+      return Rotation2d.fromDegrees(gyro.getFusedHeading());
+    }
+    return Rotation2d.fromDegrees(gyro.getYaw());
+  }*/
+
+  public void PIDDrive  (double speed, double rotation){
+    var wheelSpeeds = m_Kinematics.toWheelSpeeds(new ChassisSpeeds(speed, 0, rotation));
+    setSpeeds(wheelSpeeds);
+  
+}
+public void updateOdometry(){
+  //m_odometry.update(getGyro(), leftDriveEncoder.getPosition(), rightDriveEncoder.getPosition());
+}
   public void ArcadeDrive(double speed, double rotation){
     arcade.arcadeDrive(speed, rotation);
+  }
+  public void RunAtPID(double speed){
+    double CommandedSpeed = speed*Constants.DriveConstants.MaxDriveRPM;
+    rightController.setReference(CommandedSpeed, ControlType.kVelocity);
+    
+    leftController.setReference(CommandedSpeed, ControlType.kVelocity);
   }
 
 
@@ -56,6 +156,7 @@ public class Drivetrain extends SubsystemBase {
     return rightDriveEncoder.getVelocity();
 
   }
+  
  
 
   @Override

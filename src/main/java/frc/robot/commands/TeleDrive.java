@@ -8,6 +8,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.RobotContainer;
 
 import java.lang.module.ModuleDescriptor.Requires;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
@@ -15,15 +16,15 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class TeleDrive extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 private Drivetrain teleDrivetrain;
-private double m_rotation;
-private double m_speed;
+private DoubleSupplier m_rotation;
+private DoubleSupplier m_speed;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public TeleDrive(Drivetrain drivetrain, double speed, double rotation) {
+  public TeleDrive(Drivetrain drivetrain, DoubleSupplier speed, DoubleSupplier rotation) {
     teleDrivetrain = drivetrain;
     m_speed = speed;
     m_rotation = rotation;
@@ -40,12 +41,14 @@ private double m_speed;
   @Override
   public void execute() {
 
-    teleDrivetrain.ArcadeDrive(m_speed, m_rotation);
+    teleDrivetrain.ArcadeDrive(m_speed.getAsDouble(), m_rotation.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    teleDrivetrain.ArcadeDrive(0, 0);
+  }
 
   // Returns true when the command should end.
   @Override
