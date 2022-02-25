@@ -81,10 +81,10 @@ public class RobotContainer {
     master.addNumber("PidCommand", ()-> xbox.leftStick.getY()*DriveConstants.MaxDriveRPM);
   }
   public void ShowOdometry(){
-    /*master.addNumber("GyroAngle", ()-> teleDrivetrain.getGyro().getDegrees());
+    master.addNumber("GyroAngle", ()-> teleDrivetrain.getGyro().getDegrees());
     master.addNumber("OdometryY", ()-> teleDrivetrain.m_odometry.getPoseMeters().getY());
     master.addNumber("OdometryX", ()-> teleDrivetrain.m_odometry.getPoseMeters().getX());
-*/
+
 
   }
 

@@ -10,10 +10,11 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.SPI;
 
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -21,6 +22,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -44,9 +46,11 @@ public class Drivetrain extends SubsystemBase {
   public final DifferentialDriveKinematics m_Kinematics = new DifferentialDriveKinematics(
     DriveConstants.TrackWidth
   );
+
+  public final Gyro gyro = new ADXRS450_Gyro();
   //public final AHRS gyro = new AHRS(SPI.Port.kMXP);
 
-  //public final DifferentialDriveOdometry m_odometry;
+  public final DifferentialDriveOdometry m_odometry;
 
 
 
@@ -86,13 +90,13 @@ public class Drivetrain extends SubsystemBase {
 
     rightController.setIZone(DriveConstants.DriveIZone);
     rightController.setOutputRange(-1, 1);
-    //m_odometry = new DifferentialDriveOdometry(getGyro());
+    m_odometry = new DifferentialDriveOdometry(getGyro());
 
 
     leftDriveEncoder.setPositionConversionFactor(2*Math.PI*DriveConstants.WheelRadius/42);
     rightDriveEncoder.setPositionConversionFactor(2*Math.PI*DriveConstants.WheelRadius/42);
 
-    //m_odometry.resetPosition(new Pose2d(), getGyro());
+    m_odometry.resetPosition(new Pose2d(), getGyro());
 
 
 
@@ -121,12 +125,9 @@ public class Drivetrain extends SubsystemBase {
 
   }
 
-  /*public Rotation2d getGyro(){
-    if(gyro.isMagnetometerCalibrated()){
-      return Rotation2d.fromDegrees(gyro.getFusedHeading());
-    }
-    return Rotation2d.fromDegrees(gyro.getYaw());
-  }*/
+  public Rotation2d getGyro(){
+ return Rotation2d.fromDegrees(gyro.getAngle());
+  }
 
   public void PIDDrive  (double speed, double rotation){
     var wheelSpeeds = m_Kinematics.toWheelSpeeds(new ChassisSpeeds(speed, 0, rotation));
@@ -134,7 +135,7 @@ public class Drivetrain extends SubsystemBase {
   
 }
 public void updateOdometry(){
-  //m_odometry.update(getGyro(), leftDriveEncoder.getPosition(), rightDriveEncoder.getPosition());
+  m_odometry.update(getGyro(), leftDriveEncoder.getPosition()/9, rightDriveEncoder.getPosition()/9);
 }
   public void ArcadeDrive(double speed, double rotation){
     arcade.arcadeDrive(speed, rotation);
@@ -148,12 +149,12 @@ public void updateOdometry(){
 
 
   public  double ShowLeftDriveSpeeds(){
-    return leftDriveEncoder.getVelocity();
+    return leftDriveEncoder.getVelocity()/9;
 
   }
   
   public  double ShowRightDriveSpeeds(){
-    return rightDriveEncoder.getVelocity();
+    return rightDriveEncoder.getVelocity()/9;
 
   }
   
@@ -161,6 +162,7 @@ public void updateOdometry(){
 
   @Override
   public void periodic() {
+    updateOdometry();
     // This method will be called once per scheduler run
   }
 

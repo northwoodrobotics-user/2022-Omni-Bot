@@ -21,7 +21,7 @@ public final class Constants {
         public static final double DriveKd = 0.0;
         public static final double DriveFF = 0.00164;
         public static final double DriveIZone = 0.0;
-        public static final double MaxDriveRPM = 500;
+        public static final double MaxDriveRPM = 400;
         public static final double TrackWidth = Units.inchesToMeters(24);
         public static final double WheelRadius = Units.inchesToMeters(3);
 
