@@ -120,6 +120,9 @@ public class Drivetrain extends SubsystemBase {
       return true;
     }else return false;
   }
+  public DifferentialDriveWheelSpeeds getWheelSpeeds(){
+    return new DifferentialDriveWheelSpeeds(leftDriveEncoder.getVelocity(), rightDriveEncoder.getVelocity()); 
+  }
 
 
   public void setSpeeds(DifferentialDriveWheelSpeeds speeds){
@@ -129,7 +132,16 @@ public class Drivetrain extends SubsystemBase {
     rightController.setReference(RightOutput, ControlType.kVelocity);
 
     leftController.setReference(LeftOutput, ControlType.kVelocity);
+    arcade.feed();
 
+  }
+  public void autoSpeeds(double leftSpeed, double rightSpeed){
+    leftController.setReference(leftSpeed, ControlType.kVelocity);
+    rightController.setReference(rightSpeed, ControlType.kVelocity);
+    arcade.feed();
+  }
+  public Pose2d getPose(){
+    return m_odometry.getPoseMeters();
   }
 
   public Rotation2d getGyro(){
