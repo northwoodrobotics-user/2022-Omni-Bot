@@ -10,10 +10,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.commands.ClimbDown;
+import frc.robot.commands.ClimbUp;
 import frc.robot.commands.PIDDRIVE;
 import frc.robot.commands.PIDRUN;
 import frc.robot.commands.TeleDrive;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.TestClimber;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -25,15 +28,16 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   public static Drivetrain teleDrivetrain = new Drivetrain();
+  public static TestClimber climber = new TestClimber();
   //private final TeleDrive teleDrive;
   public ShuffleboardTab master = Shuffleboard.getTab("Master");
   public static SpectrumXboxController xbox;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
-     xbox = new SpectrumXboxController(0, 0.1, 0.1);
+     xbox = new SpectrumXboxController(0, 0.3, 0.3);
 
-    teleDrivetrain.setDefaultCommand(new PIDDRIVE(teleDrivetrain, ()->xbox.leftStick.getY()*DriveConstants.MaxDriveRPM, ()->-xbox.rightStick.getX()*1000));
+    teleDrivetrain.setDefaultCommand(new PIDDRIVE(teleDrivetrain, ()->xbox.leftStick.getY()*DriveConstants.MaxDriveRPM, ()->xbox.rightStick.getX()*1000));
     //teleDrivetrain.RunAtPID(xbox2.getLeftY()*5000);
 
 
@@ -60,6 +64,12 @@ public class RobotContainer {
     xbox.yButton.toggleWhenPressed(
       new TeleDrive(teleDrivetrain, ()-> xbox.leftStick.getY(), ()-> xbox.rightStick.getX())
     );
+    xbox.leftBumper.whenHeld(
+      new ClimbUp(climber)
+    );
+    xbox.rightBumper.whenHeld(
+      new ClimbDown(climber)
+    );
     
     
   }
@@ -73,6 +83,7 @@ public class RobotContainer {
     master.addNumber("LeftDriveSpeed", ()-> teleDrivetrain.ShowLeftDriveSpeeds());
     
     master.addNumber("RightDriveSpeed", ()-> teleDrivetrain.ShowRightDriveSpeeds());
+    master.addBoolean("testBeamBreak", ()->teleDrivetrain.isBeamBreakTriggered());
   }
   public void ShowInputs(){
     master.addNumber("ControllerY", ()-> xbox.leftStick.getY());

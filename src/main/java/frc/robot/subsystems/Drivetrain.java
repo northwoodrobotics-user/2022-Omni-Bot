@@ -11,9 +11,11 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.SPI;
 
+//import com.revrobotics.AnalogInput;
 //import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -30,7 +32,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 
 public class Drivetrain extends SubsystemBase {
-
+  public AnalogInput beambreak = new AnalogInput(0);
   public CANSparkMax leftfront = new CANSparkMax(4, MotorType.kBrushless);
   public CANSparkMax rightfront = new CANSparkMax(2, MotorType.kBrushless);
   public CANSparkMax SlaveRight = new CANSparkMax(1, MotorType.kBrushless);
@@ -112,6 +114,11 @@ public class Drivetrain extends SubsystemBase {
     arcade = new DifferentialDrive(leftfront, rightfront);
     arcade.setSafetyEnabled(false);
     arcade.setExpiration(0.1);
+  }
+  public boolean isBeamBreakTriggered(){
+    if(beambreak.getVoltage()>0.1){
+      return true;
+    }else return false;
   }
 
 

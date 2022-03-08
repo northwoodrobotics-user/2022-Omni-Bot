@@ -21,9 +21,20 @@ public final class Constants {
         public static final double DriveKd = 0.0;
         public static final double DriveFF = 0.00164;
         public static final double DriveIZone = 0.0;
-        public static final double MaxDriveRPM = 400;
+        public static final double MaxDriveRPM = 1000;
         public static final double TrackWidth = Units.inchesToMeters(24);
         public static final double WheelRadius = Units.inchesToMeters(3);
+        public static final double ksVolts = 0.14666; 
+        public static final double kV = 2.3467; 
+        public static final double kA = 0.15628; 
+        public static final double kMaxMetersPerSecond = 2.5; 
+        public static final double kMaxAccelMetersPerSecondSquared = 2.5; 
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
+        
+
+
+
 
     }
     
