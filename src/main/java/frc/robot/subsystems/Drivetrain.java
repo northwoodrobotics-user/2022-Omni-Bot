@@ -153,6 +153,11 @@ public void updateOdometry(){
     
     leftController.setReference(CommandedSpeed, ControlType.kVelocity);
   }
+  public void DriveVolts(double leftVolts, double rightVolts){ 
+    leftfront.setVoltage(leftVolts);
+    rightfront.setVoltage(rightVolts);
+    arcade.feed();
+  }
 
 
   public  double ShowLeftDriveSpeeds(){
